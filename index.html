@@ -865,5 +865,154 @@
     });
   }
 </script>
+
+<!-- ══════════════════════════════════════════════════════
+     TOOL LAYER: Lite Source Integrity Checker
+     ══════════════════════════════════════════════════════ -->
+<section style="background:#f9f7f4;padding:5rem 2rem;border-top:2px solid #1B7A68">
+  <div style="max-width:780px;margin:0 auto">
+    <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:#1B7A68;margin:0 0 .75rem">Free Tool</p>
+    <h2 style="font-size:2rem;font-weight:700;margin:0 0 1rem">Quick Source Check</h2>
+    <p style="color:#555;margin:0 0 2rem;line-height:1.7">Paste a claim, paragraph, or AI-generated excerpt. This tool runs a lite integrity check — classifying claim type, flagging source traceability gaps, and returning a preliminary evidence grade. Full audit is a separate engagement.</p>
+    <textarea id="pv-input" rows="6" placeholder="Paste your claim or AI-generated text here..." style="width:100%;padding:1rem;border:1.5px solid #ccc;border-radius:4px;font-size:.95rem;font-family:inherit;box-sizing:border-box;resize:vertical;line-height:1.6"></textarea>
+    <button onclick="pvAnalyze()" style="margin-top:1rem;background:#1B7A68;color:#fff;border:none;padding:.75rem 2rem;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;border-radius:2px">Analyze</button>
+    <div id="pv-result" style="display:none;margin-top:2rem;border:1.5px solid #1B7A68;border-radius:4px;padding:1.5rem;background:#fff"></div>
+  </div>
+</section>
+
+<script>
+function pvAnalyze() {
+  var text = document.getElementById('pv-input').value.trim();
+  if (!text) { alert('Paste some text first.'); return; }
+
+  // Claim type detection
+  var claimType = 'descriptive';
+  if (/studi(es|ed)|research (shows|found|suggests|indicates)|evidence|data (show|suggest)/i.test(text)) claimType = 'empirical-reference';
+  if (/you should|must|need to|always|never|the best|proven|guaranteed/i.test(text)) claimType = 'express-claim';
+  if (/suggests|may|might|could|appear|seem|some/i.test(text)) claimType = 'implied-claim';
+
+  // Source traceability
+  var hasCitation = /\(\d{4}\)|\[\d+\]|according to [A-Z]|per [A-Z]|cited in|see also|\d{4}.*et al/i.test(text);
+  var hasVagueRef = /studies show|research shows|experts say|scientists believe|data suggests/i.test(text);
+  var traceability = hasCitation ? 'direct — citation markers detected' : hasVagueRef ? 'indirect — vague attribution only' : 'none — no source anchor found';
+
+  // Freshness signal
+  var yearMatch = text.match(/20(\d{2})/g);
+  var freshness = yearMatch ? 'dated reference detected (' + yearMatch.join(', ') + ')' : 'no date anchor — currency unverifiable';
+
+  // Explicitness
+  var vagueTerms = (text.match(/many|some|often|usually|typically|generally|most|few|several/gi)||[]).length;
+  var specificity = vagueTerms > 3 ? 'low — ' + vagueTerms + ' vague quantifiers found' : vagueTerms > 0 ? 'moderate — ' + vagueTerms + ' vague quantifiers' : 'high — no vague quantifiers detected';
+
+  // Grade
+  var score = 0;
+  if (hasCitation) score += 2;
+  if (!hasVagueRef) score += 1;
+  if (yearMatch) score += 1;
+  if (vagueTerms < 2) score += 1;
+  var grade = score >= 4 ? 'B — Verifiable with documentation' : score >= 2 ? 'C — Partially traceable, gaps present' : 'D — Low traceability, audit recommended';
+  var gradeColor = score >= 4 ? '#1B7A68' : score >= 2 ? '#B8842A' : '#c0392b';
+
+  document.getElementById('pv-result').style.display = 'block';
+  document.getElementById('pv-result').innerHTML = [
+    '<p style="font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#888;margin:0 0 1.25rem">Lite Integrity Check — ' + text.split(' ').length + ' words analyzed</p>',
+    '<table style="width:100%;border-collapse:collapse;font-size:.88rem">',
+    '<tr style="border-bottom:1px solid #eee"><td style="padding:.6rem 0;color:#888;width:40%">Claim type</td><td style="padding:.6rem 0;font-weight:600">' + claimType + '</td></tr>',
+    '<tr style="border-bottom:1px solid #eee"><td style="padding:.6rem 0;color:#888">Source traceability</td><td style="padding:.6rem 0;font-weight:600">' + traceability + '</td></tr>',
+    '<tr style="border-bottom:1px solid #eee"><td style="padding:.6rem 0;color:#888">Currency</td><td style="padding:.6rem 0;font-weight:600">' + freshness + '</td></tr>',
+    '<tr style="border-bottom:1px solid #eee"><td style="padding:.6rem 0;color:#888">Specificity</td><td style="padding:.6rem 0;font-weight:600">' + specificity + '</td></tr>',
+    '<tr><td style="padding:.75rem 0;color:#888">Preliminary grade</td><td style="padding:.75rem 0;font-weight:700;font-size:1rem;color:' + gradeColor + '">' + grade + '</td></tr>',
+    '</table>',
+    '<p style="margin:1.5rem 0 0;font-size:.82rem;color:#888;border-top:1px solid #eee;padding-top:1rem">This is a pattern-based lite check, not a full audit. Full R1–R25 verification includes manual source retrieval, cross-referencing, claim-context analysis, and a documented report. <a href="#audit" style="color:#1B7A68">Request a full audit →</a></p>'
+  ].join('');
+}
+</script>
+
+<!-- ══════════════════════════════════════════════════════
+     METHODOLOGY LAYER: The EVIDENCE Framework
+     ══════════════════════════════════════════════════════ -->
+<section style="padding:5rem 2rem;border-top:1px solid #e8e4e0">
+  <div style="max-width:780px;margin:0 auto">
+    <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:#1B7A68;margin:0 0 .75rem">Open Methodology</p>
+    <h2 style="font-size:2rem;font-weight:700;margin:0 0 .75rem">The EVIDENCE Framework</h2>
+    <p style="color:#555;margin:0 0 3rem;line-height:1.7">The framework underlying every Source Integrity Audit. Published openly because a standard only matters if others can evaluate it, adopt it, and hold it accountable.</p>
+    <div style="display:grid;gap:1.5rem">
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">E — Express vs. Implied Claims</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">Explicit assertions ("X causes Y") carry a different evidentiary burden than implied ones ("X may support Y"). Most AI-generated content conflates the two. Each claim is categorized before verification begins.</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">V — Verifiability Grade</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">Direct (specific source retrievable), Indirect (vague attribution — "studies show"), or None (no source anchor). Only direct sources can be verified. The others can only be noted as unverified.</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">I — Integrity of Source Type</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">Primary (peer-reviewed original research, court filings, regulatory text) outranks secondary (journalism, summaries, explainers). Tertiary sources (Wikipedia, AI-generated summaries) are flagged for what they are.</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">D — Dating & Currency</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">A source can be real and retrievable and still be wrong because the field moved. Currency requirements vary by domain — a 2018 regulatory citation is different from a 2018 neuroscience citation. Each is assessed against its field's pace of change.</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">E — Explicitness of Attribution</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">"Research shows" is not attribution. A named author, journal, year, and findable DOI or URL is. Vague quantifiers ("many," "most," "experts say") are catalogued and flagged, not silently accepted.</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">N — Neutrality & Conflict Disclosure</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">Who funded the study? Does the citing source have a financial relationship with the claim? Sponsor-funded research is not disqualified — it is disclosed, because the reader's judgment requires the information.</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">C — Confidence Level</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">Strong (multiple independent primary sources, consistent findings, current), Moderate-Test (limited evidence, single study, or mixed results — publishable with caveats), Exploratory (early-stage, theoretical, or anecdotal — use only with explicit framing).</p>
+      </div>
+      <div style="border-left:3px solid #1B7A68;padding-left:1.5rem">
+        <p style="font-weight:700;margin:0 0 .35rem">E — Evidence Grade Summary</p>
+        <p style="color:#555;font-size:.9rem;margin:0;line-height:1.6">A — Fully verified, primary, current, explicit attribution. B — Verified with minor documentation gaps. C — Partially traceable. D — Low traceability, claims require qualification. F — Fabricated, retracted, or unverifiable by any means.</p>
+      </div>
+    </div>
+    <p style="margin:2.5rem 0 0;font-size:.82rem;color:#888;line-height:1.7">The EVIDENCE framework is licensed for use with attribution: <em>Provenance Source Integrity Audit, RN Collins LLC, 2025.</em> Organizations applying it to their own workflows are encouraged to publish their findings.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     CONSULTING LAYER: What a Full Audit Looks Like
+     ══════════════════════════════════════════════════════ -->
+<section id="audit" style="background:#1B7A68;color:#fff;padding:5rem 2rem;border-top:2px solid #155a50">
+  <div style="max-width:780px;margin:0 auto">
+    <p style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.6);margin:0 0 .75rem">Full Audit Engagement</p>
+    <h2 style="font-size:2rem;font-weight:700;margin:0 0 1rem;color:#fff">What You Get</h2>
+    <p style="color:rgba(255,255,255,.85);margin:0 0 3rem;line-height:1.7;max-width:580px">A Source Integrity Audit is not a fact-check pass. It is a documented verification protocol applied to every citation and substantive claim in a document, manuscript, filing, or content library.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3rem">
+      <div>
+        <p style="font-weight:700;margin:0 0 .5rem;color:#fff">Scope</p>
+        <ul style="color:rgba(255,255,255,.8);font-size:.88rem;line-height:1.9;margin:0;padding-left:1.2rem">
+          <li>Up to 25 citations per engagement (R1–R25)</li>
+          <li>All claim types classified and graded</li>
+          <li>Source retrieval and archiving</li>
+          <li>Conflict and funding disclosure check</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-weight:700;margin:0 0 .5rem;color:#fff">Deliverable</p>
+        <ul style="color:rgba(255,255,255,.8);font-size:.88rem;line-height:1.9;margin:0;padding-left:1.2rem">
+          <li>EVIDENCE-graded citation report (PDF)</li>
+          <li>Claim-by-claim classification table</li>
+          <li>Recommended qualifications or rewrites</li>
+          <li>Archived sources for your records</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <div style="background:rgba(255,255,255,.12);padding:.6rem 1.2rem;border-radius:2px;font-size:.82rem;color:rgba(255,255,255,.9)">5 business days</div>
+      <div style="background:rgba(255,255,255,.12);padding:.6rem 1.2rem;border-radius:2px;font-size:.82rem;color:rgba(255,255,255,.9)">R1–R25 standard</div>
+      <div style="background:rgba(255,255,255,.12);padding:.6rem 1.2rem;border-radius:2px;font-size:.82rem;color:rgba(255,255,255,.9)">PDF + source archive</div>
+    </div>
+    <div style="margin-top:2.5rem;padding-top:2.5rem;border-top:1px solid rgba(255,255,255,.2)">
+      <p style="margin:0 0 1rem;color:rgba(255,255,255,.7);font-size:.88rem">This engagement is right for: publishers verifying AI-assisted manuscripts, law firms reviewing filings, organizations needing documented evidence standards for public claims.</p>
+      <a href="mailto:collins.ra@northeastern.edu?subject=Source Integrity Audit Request" style="display:inline-block;background:#fff;color:#1B7A68;text-decoration:none;padding:.75rem 2rem;font-size:.82rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;border-radius:2px">Request an Audit →</a>
+    </div>
+  </div>
+</section>
+
 </body>
 </html>
