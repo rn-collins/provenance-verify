@@ -782,7 +782,7 @@
     <div class="modal-success" id="enrollSuccess">
       <div class="modal-success-icon">✓</div>
       <h3>Request Received</h3>
-      <p>We'll follow up within one business day to scope your audit. Redirecting you now…</p>
+      <p>We'll follow up within one business day to scope your audit.</p>
     </div>
   </div>
 </div>
@@ -860,7 +860,7 @@
     postLead({ email: email, name: name, source: 'enroll-prov' }).then(function() {
       document.getElementById('enrollForm').style.display = 'none';
       document.getElementById('enrollSuccess').classList.add('visible');
-      setTimeout(function() { window.open('https://gumroad.com', '_blank'); }, 1800);
+      // Lead captured — no checkout is live yet, so we stay on-page instead of opening a dead-end tab.
     });
   }
 
